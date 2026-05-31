@@ -1,5 +1,5 @@
 let adminToken = localStorage.getItem('admin_token');
-const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://arena-tournament-s7ne.onrender.com';
+const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://arena-tournament-1.onrender.com';
 
 function showToast(msg, type = "success") {
     const toast = document.getElementById("toast");
