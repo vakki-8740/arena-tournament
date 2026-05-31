@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Arena - Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007aff">
+    <link rel="apple-touch-icon" href="icon-192.svg">
+</head>
+<body>
+
+<div id="offline-popup"><i class="fas fa-wifi" style="text-decoration: line-through;"></i> No Internet Connection</div>
+<div id="toast">Message</div>
+
+<div id="page-transition" class="page-transition-overlay">
+    <div class="pt-logo">Arena</div>
+    <div class="pt-spinner"></div>
+</div>
+
+<!-- AUTH PAGE -->
+<div id="auth-page">
+    <div class="auth-logo">
+        <div style="width:90px; height:90px; border-radius:24px; background:linear-gradient(135deg, var(--primary), #34aeff); display:flex; align-items:center; justify-content:center; margin:0 auto 18px; box-shadow: 0 10px 30px rgba(0,122,255,0.3); animation: authLogoFloat 3s ease-in-out infinite;">
+            <i class="fas fa-gamepad" style="font-size:40px; color:white;"></i>
+        </div>
+        <h1 class="auth-logo-text" id="auth-app-name">Arena Tournament</h1>
+        <p style="font-size:15px; color:var(--text-muted); font-weight:500; margin-top:6px;">Play with Skill. Win Big.</p>
+    </div>
+    <button class="google-btn" onclick="handleGoogleLogin()" style="margin-top:30px;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Continue with Google
+    </button>
+    <p style="text-align:center; margin-top:20px; font-size:12px; color:var(--text-muted); font-weight:500;">Login or Sign Up both use Google</p>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-container" style="display:none;">
+    <div class="header" style="padding: 15px 20px;">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <i class="fas fa-arrow-left" onclick="navigateTo('profile.html')" style="font-size:20px; cursor:pointer; color:var(--text-main);"></i>
+            <h1 style="font-size:18px; font-weight:800; color:var(--text-main);">Settings</h1>
+        </div>
+    </div>
+    <div class="main-content" style="padding-bottom:30px;">
+        <div id="settings">
+            <div class="settings-list">
+                <div class="setting-item" style="cursor:default;">
+                    <span style="display:flex; align-items:center; gap:10px;"><i class="fas fa-moon" style="color:var(--primary);"></i> Dark Mode</span>
+                    <label style="position:relative; display:inline-block; width:50px; height:28px;">
+                        <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()" style="opacity:0; width:0; height:0;">
+                        <span style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#e5e5ea; border-radius:14px; transition:0.3s;"></span>
+                        <span class="toggle-slider" style="position:absolute; content:''; height:22px; width:22px; left:3px; bottom:3px; background:white; border-radius:50%; transition:0.3s; box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span>
+                    </label>
+                </div>
+                <div class="setting-item" onclick="clearCache()"><span style="display:flex; align-items:center; gap:10px;"><i class="fas fa-broom" style="color:var(--warning);"></i> Clear Cache</span><i class="fas fa-chevron-right" style="color:var(--text-muted);"></i></div>
+                <div class="setting-item" onclick="openAdminLink('telegram')"><span style="display:flex; align-items:center; gap:10px;"><i class="fab fa-telegram" style="color:#0088cc;"></i> Telegram Channel</span><i class="fas fa-chevron-right" style="color:var(--text-muted);"></i></div>
+                <div class="setting-item" onclick="openAdminLink('help')"><span style="display:flex; align-items:center; gap:10px;"><i class="fas fa-question-circle" style="color:var(--warning);"></i> Help & Support</span><i class="fas fa-chevron-right" style="color:var(--text-muted);"></i></div>
+                <div class="setting-item" onclick="confirmLogout()" style="border-bottom:none; color:var(--danger);"><span style="display:flex; align-items:center; gap:10px;"><i class="fas fa-sign-out-alt"></i> Logout</span><i class="fas fa-chevron-right" style="color:var(--text-muted);"></i></div>
+            </div>
+            <div style="text-align:center; margin-top:30px;">
+                <div style="font-size:13px; color:var(--text-muted); font-weight:600;">Arena Tournament v1.0</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Play with Skill. Win Big.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PROFILE COMPLETION -->
+<div id="profile-complete-popup" class="profile-complete-overlay" style="display:none;" onclick="event.preventDefault(); event.stopPropagation();">
+    <div class="profile-complete-card" onclick="event.stopPropagation();">
+        <div class="pc-header">
+            <div class="pc-icon"><i class="fas fa-user-plus"></i></div>
+            <h2>Profile Complete Karo!</h2>
+            <p>Fill all details, this popup won't close until done</p>
+        </div>
+        <div class="pc-field"><label>Your Name <span>*</span></label><input type="text" id="pc-name" placeholder="Enter your full name"></div>
+        <div class="pc-field"><label>Phone Number <span>*</span></label><input type="number" id="pc-phone" placeholder="10-Digit Mobile Number" maxlength="10"><div class="pc-hint">Phone number will be used for login</div></div>
+        <div class="pc-field"><label>Free Fire Name <span>*</span></label><input type="text" id="pc-ffname" placeholder="FF in-game name"></div>
+        <div class="pc-field"><label>Free Fire UID <span>*</span></label><input type="number" id="pc-ffuid" placeholder="FF UID number"></div>
+        <button class="btn" onclick="saveFullProfile()" style="margin-top:5px;"><span class="btn-text">Save & Continue</span><div class="spinner"></div></button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-db.js"></script>
+<script src="common.js"></script>
+<script src="home.js"></script>
+<script src="settings.js"></script>
+<script>
+(async function() {
+    var uid = FB.getCurrentUid();
+    if(!uid) { document.getElementById('auth-page').style.display = 'flex'; return; }
+    document.getElementById('auth-page').style.display = 'none';
+    document.getElementById('app-container').style.display = 'flex';
+    loadTheme();
+    loadSettings();
+    try {
+        var user = await FB.getUser(uid);
+        if(user && (!user.phone || !user.ff_name || !user.ff_uid)) {
+            document.getElementById('profile-complete-popup').style.display = 'flex';
+            if(user.name) document.getElementById('pc-name').value = user.name;
+        }
+    } catch(e) {}
+})();
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').then(r => console.log('SW registered')).catch(e => console.log('SW failed')); }
+
+/* Toggle slider styles injected via JS for settings page */
+(function() {
+    var style = document.createElement('style');
+    style.textContent = '#dark-mode-toggle:checked + span { background: var(--primary) !important; } #dark-mode-toggle:checked + span + .toggle-slider { transform: translateX(22px) !important; }';
+    document.head.appendChild(style);
+})();
+</script>
+</body>
+</html>
