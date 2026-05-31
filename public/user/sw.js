@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arena-tournament-v2';
+const CACHE_NAME = 'arena-tournament-v1';
 const urlsToCache = [
     '/home.html',
     '/matches.html',
@@ -15,8 +15,7 @@ const urlsToCache = [
     '/wallet.js',
     '/profile.js',
     '/settings.js',
-    '/firebase-config.js',
-    '/firestore-direct.js'
+    '/firebase-config.js'
 ];
 
 self.addEventListener('install', event => {
