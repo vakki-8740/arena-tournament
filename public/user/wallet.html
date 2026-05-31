@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Arena - My Wallet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#007aff">
+    <link rel="apple-touch-icon" href="../site/icon-192.svg">
+</head>
+<body>
+
+<div id="offline-popup"><i class="fas fa-wifi" style="text-decoration: line-through;"></i> No Internet Connection</div>
+<div id="toast">Message</div>
+
+<!-- PAGE TRANSITION LOADER -->
+<div id="page-transition" class="page-transition-overlay">
+    <div class="pt-logo">Arena</div>
+    <div class="pt-spinner"></div>
+</div>
+
+<div id="auth-page" style="display:none;"></div>
+
+<!-- MAIN APP CONTAINER -->
+<div id="app-container" style="display:none;">
+    
+    <div class="header" style="padding: 15px 20px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div id="app-logo-header" style="width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--primary), #34aeff); display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:16px; box-shadow:0 2px 8px rgba(0,122,255,0.3);">
+                <img id="header-app-logo-img" src="" alt="" style="width:100%; height:100%; border-radius:10px; object-fit:cover; display:none;">
+                <span id="header-app-logo-text">A</span>
+            </div>
+            <div>
+                <div id="header-app-name" style="font-size:17px; font-weight:800; color:var(--text-main); letter-spacing:-0.3px; line-height:1.1;">Arena Tournament</div>
+                <div style="font-size:10px; color:var(--text-muted); font-weight:600;">My Wallet</div>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div class="wallet-badge" style="margin-right:0;"><i class="fas fa-wallet"></i> ₹<span id="header-bal">0</span></div>
+            <div id="user-avatar-header" onclick="navigateTo('profile.html')" style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--primary), #34aeff); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1);"></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="wallet">
+            <div class="wallet-card">
+                <div style="font-size: 14px; opacity: 0.9; font-weight: 500;">Available Balance</div>
+                <div class="wallet-balance">₹<span id="main-bal">0</span></div>
+                <div class="wallet-actions">
+                    <button class="wallet-btn" onclick="openModal('deposit-modal')"><i class="fas fa-plus-circle"></i> Deposit</button>
+                    <button class="wallet-btn" onclick="openWithdrawModal()"><i class="fas fa-arrow-circle-down"></i> Withdraw</button>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item"><span>Total Deposit</span><h3 id="w-stat-dep" style="color:var(--success);">₹0</h3></div>
+                <div class="stat-item"><span>Total Withdrawal</span><h3 id="w-stat-wit" style="color:var(--danger);">₹0</h3></div>
+                <div class="stat-item"><span>Total Wins</span><h3 id="w-stat-win" style="color:var(--primary);">0</h3></div>
+                <div class="stat-item"><span>Total Earning</span><h3 id="w-stat-earn" style="color:var(--warning);">₹0</h3></div>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px; margin-top: 10px; color: var(--text-main);">Transaction History</h3>
+            <div class="tx-list" id="user-tx-list"></div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('home.html')"><i class="fas fa-home"></i>Home</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('matches.html')"><i class="fas fa-gamepad"></i>Matches</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('rank.html')"><i class="fas fa-trophy"></i>Rank</a>
+        <a class="nav-item active" href="wallet.html"><i class="fas fa-wallet"></i>Wallet</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('profile.html')"><i class="fas fa-user"></i>Profile</a>
+    </div>
+
+    <!-- MODALS -->
+    <div id="deposit-modal" class="modal-overlay" onclick="closeModal(event, 'deposit-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="margin-bottom: 10px; font-weight: 800;">Add Money</h2>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img id="d-qr-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect fill='%23f2f2f7' width='150' height='150'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%238e8e93' font-size='14'%3EQR Code%3C/text%3E%3C/svg%3E" alt="QR" style="border-radius: 12px; width: 140px; height: 140px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <p style="font-size: 14px; font-weight: 700; margin-top: 8px;">UPI: <span id="d-upi-id">admin@upi</span></p>
+                <button class="btn btn-outline" style="padding:8px; font-size:12px; margin-top:10px;" onclick="downloadQR()"><i class="fas fa-download"></i> Download QR</button>
+            </div>
+            <input type="number" id="dep-amount" placeholder="Amount (₹)">
+            <input type="number" id="dep-utr" placeholder="12-Digit UTR Number">
+            <button class="btn" onclick="submitDeposit(this)"><span class="btn-text">Submit Request</span><div class="spinner"></div></button>
+        </div>
+    </div>
+
+    <div id="withdraw-modal" class="modal-overlay" onclick="closeModal(event, 'withdraw-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="margin-bottom: 15px; font-weight: 800;">Withdraw Money</h2>
+            <div id="withdraw-methods-container" style="margin-bottom: 15px;"></div>
+            <button class="btn btn-outline" style="padding:10px; font-size:13px; margin-bottom:15px;" onclick="openModal('add-payment-modal'); forceCloseModal('withdraw-modal');">
+                <i class="fas fa-plus"></i> Add Payment Method
+            </button>
+            <input type="number" id="with-amount" placeholder="Amount (₹)">
+            <p style="font-size: 12px; color: var(--danger); margin-bottom: 15px; font-weight: 600;">* Minimum withdrawal is ₹100</p>
+            <button class="btn" onclick="submitWithdraw(this)"><span class="btn-text">Request Withdraw</span><div class="spinner"></div></button>
+        </div>
+    </div>
+
+    <div id="add-payment-modal" class="modal-overlay" onclick="closeModal(event, 'add-payment-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="margin-bottom: 15px; font-weight: 800;">Add Payment Method</h2>
+            <div class="ios-segment">
+                <div class="segment-btn active" onclick="switchPaymentTab('upi')">UPI ID</div>
+                <div class="segment-btn" onclick="switchPaymentTab('bank')">Bank Account</div>
+            </div>
+            <div id="pay-setup-upi" class="pay-setup-form active">
+                <input type="text" id="setup-upi-id" placeholder="Enter UPI ID (e.g. number@paytm)">
+                <button class="btn" onclick="saveUpiMethod(this)"><span class="btn-text">Save UPI</span><div class="spinner"></div></button>
+            </div>
+            <div id="pay-setup-bank" class="pay-setup-form">
+                <input type="text" id="setup-bank-name" placeholder="Account Holder Name">
+                <input type="number" id="setup-bank-acc" placeholder="Account Number">
+                <input type="text" id="setup-bank-ifsc" placeholder="IFSC Code">
+                <button class="btn" onclick="saveBankMethod(this)"><span class="btn-text">Save Bank</span><div class="spinner"></div></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-anim-modal" class="modal-overlay" style="z-index: 10000; display: none; align-items: center; justify-content: center;">
+        <div style="background: var(--card-bg); padding: 40px; border-radius: 24px; text-align: center; animation: slideUp 0.3s ease-out; width: 80%; max-width: 320px;">
+            <i class="fas fa-check-circle success-circle-anim"></i>
+            <h3 style="margin-top:20px; font-weight:800; color:var(--text-main); font-size:18px;">Withdrawal Successful!</h3>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">Your request is pending processing.</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="common.js"></script>
+<script src="wallet.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered')).catch(err => console.log('SW failed'));
+}
+</script>
+</body>
+</html>
