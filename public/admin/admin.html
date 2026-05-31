@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Arena - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+
+    <div id="toast">Message</div>
+
+    <!-- Modals -->
+    <div id="user-detail-modal" class="modal-overlay" onclick="closeModal(event, 'user-detail-modal')">
+        <div class="modal-content" style="max-width:500px; text-align:left; max-height:90vh; overflow-y:auto;" onclick="event.stopPropagation()">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="font-weight:800; font-size:18px;">User Details</h2>
+                <i class="fas fa-times" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="forceCloseModal('user-detail-modal')"></i>
+            </div>
+            <div id="user-detail-content"></div>
+        </div>
+    </div>
+
+    <div id="edit-balance-modal" class="modal-overlay" onclick="closeModal(event, 'edit-balance-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="margin-bottom:15px; font-weight:800;">Edit User Balance</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">User: <strong id="edit-u-name">...</strong></p>
+            <input type="hidden" id="edit-u-id">
+            <input type="number" id="edit-u-bal" placeholder="New Balance">
+            <button class="btn btn-success" style="width:100%;" onclick="saveBalance(this)">
+                <span class="btn-text">Update Balance</span><div class="spinner"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Login -->
+    <div id="login-section">
+        <div class="login-box">
+            <h2>Arena Admin</h2>
+            <input type="email" id="admin-email" placeholder="Admin Email" value="arena@gmail.com">
+            <input type="password" id="admin-pass" placeholder="Password" value="arena@freefire">
+            <button class="btn" onclick="handleLogin(this)">
+                <span class="btn-text">Login Securely</span><div class="spinner"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Layout -->
+    <div id="admin-layout" style="display:none;">
+        <div class="mobile-header">
+            <h2>Arena Admin</h2>
+            <i class="fas fa-bars menu-btn" onclick="toggleSidebar()"></i>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+            
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-logo">Arena Admin</div>
+                <div class="nav-item active" onclick="switchTab('dashboard', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
+                <div class="nav-item" onclick="switchTab('users', this)"><i class="fas fa-users"></i> Users</div>
+                <div class="nav-item" onclick="switchTab('transactions', this)"><i class="fas fa-wallet"></i> Transactions</div>
+                <div class="nav-item" onclick="switchTab('tournaments', this)"><i class="fas fa-gamepad"></i> Tournaments</div>
+                <div class="nav-item" onclick="switchTab('polls', this)"><i class="fas fa-poll"></i> Polls</div>
+                <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-cog"></i> Settings</div>
+                <div class="nav-item" style="margin-top:auto; color:var(--danger);" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+            </div>
+
+            <div class="main-content">
+
+                <!-- DASHBOARD -->
+                <div id="dashboard" class="section active">
+                    <div class="header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h1>Overview</h1>
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat-card"><h3><i class="fas fa-users" style="color:var(--primary);"></i> Total Users</h3><p id="stat-users">0</p></div>
+                        <div class="stat-card"><h3><i class="fas fa-arrow-down" style="color:var(--success);"></i> Total Deposit</h3><p id="stat-deposit" style="color: var(--success);">₹0</p></div>
+                        <div class="stat-card"><h3><i class="fas fa-arrow-up" style="color:var(--danger);"></i> Total Withdraw</h3><p id="stat-withdraw" style="color: var(--danger);">₹0</p></div>
+                        <div class="stat-card"><h3><i class="fas fa-gamepad" style="color:var(--primary);"></i> Active Tournaments</h3><p id="stat-tournaments" style="color: var(--primary);">0</p></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:25px;">
+                        <div class="stat-card"><h3><i class="fas fa-clock" style="color:var(--warning);"></i> Pending Deposits</h3><p id="stat-pending-dep" style="color:var(--warning);">0</p></div>
+                        <div class="stat-card"><h3><i class="fas fa-clock" style="color:var(--danger);"></i> Pending Withdrawals</h3><p id="stat-pending-wit" style="color:var(--danger);">0</p></div>
+                        <div class="stat-card"><h3><i class="fas fa-trophy" style="color:#FFD700;"></i> Completed Tournaments</h3><p id="stat-completed-tour" style="color:#FFD700;">0</p></div>
+                        <div class="stat-card"><h3><i class="fas fa-chart-bar" style="color:var(--primary);"></i> Active Polls</h3><p id="stat-active-polls" style="color:var(--primary);">0</p></div>
+                    </div>
+                    <div class="header"><h1>Recent Transactions</h1></div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead><tr><th>User</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+                            <tbody id="recent-trx-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- USERS -->
+                <div id="users" class="section">
+                    <div class="header" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap: 10px;">
+                        <h1>User Management</h1>
+                        <input type="text" id="search-users" placeholder="Search by Mobile Number..." onkeyup="filterUsers()" style="max-width:250px; margin:0; padding:10px 12px; border-radius:10px;">
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead><tr><th>User Details</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="user-list"><tr><td colspan="4" style="text-align:center;">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TRANSACTIONS -->
+                <div id="transactions" class="section">
+                    <div class="header" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap: 10px;">
+                        <h1>Transactions</h1>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <input type="text" id="search-trx" placeholder="Search by phone..." onkeyup="filterTrx()" style="max-width:200px; margin:0; padding:10px 12px; border-radius:10px;">
+                            <select id="filter-trx-type" onchange="filterTrx()" style="padding:10px; border-radius:10px; border:1px solid #ddd; margin:0; max-width:150px;"><option value="">All Types</option><option value="Deposit">Deposit</option><option value="Withdraw">Withdraw</option><option value="Join Fee">Join Fee</option><option value="Win">Win</option></select>
+                            <select id="filter-trx-status" onchange="filterTrx()" style="padding:10px; border-radius:10px; border:1px solid #ddd; margin:0; max-width:150px;"><option value="">All Status</option><option value="Pending">Pending</option><option value="Success">Success</option><option value="Rejected">Rejected</option></select>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead><tr><th>User</th><th>Type & Details</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="trx-list"><tr><td colspan="6" style="text-align:center;">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TOURNAMENTS -->
+                <div id="tournaments" class="section">
+                    <div class="header"><h1>Create / Edit Tournament</h1></div>
+                    <div class="form-card">
+                        <input type="hidden" id="t-edit-id"> 
+                        <input type="text" id="t-image" placeholder="Cover Image URL">
+                        <input type="text" id="t-title" placeholder="Tournament Title">
+                        <div class="form-row">
+                            <input type="text" id="t-map" placeholder="Map Name">
+                            <select id="t-type"><option value="Solo">Solo</option><option value="Duo">Duo</option><option value="Squad">Squad</option></select>
+                            <select id="t-status"><option value="live">Live</option><option value="soon">Starts Soon</option><option value="completed">Completed</option></select>
+                        </div>
+                        <div class="form-row">
+                            <input type="number" id="t-entry" placeholder="Entry Fee">
+                            <input type="number" id="t-prize" placeholder="Prize Pool">
+                            <input type="number" id="t-kill" placeholder="Per Kill Reward">
+                        </div>
+                        <div class="form-row">
+                            <input type="time" id="t-time">
+                            <input type="number" id="t-target" placeholder="Target Players">
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="t-room-id" placeholder="Custom Room ID">
+                            <input type="text" id="t-room-pass" placeholder="Room Password">
+                        </div>
+                        <select id="t-show-room"><option value="false">Hide Room Details</option><option value="true">Reveal Room Details</option></select>
+                        <div style="background: rgba(255, 215, 0, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255, 215, 0, 0.3);">
+                            <label style="font-size:12px; font-weight:bold; color:var(--warning); margin-bottom:10px; display:block;"><i class="fas fa-trophy"></i> Tournament Result (For Rank Page)</label>
+                            <div class="form-row">
+                                <input type="text" id="t-winner-name" placeholder="#1 Winner FF Name" style="margin-bottom: 0;">
+                                <input type="text" id="t-winner-uid" placeholder="#1 Winner FF UID" style="margin-bottom: 0;">
+                            </div>
+                        </div>
+                        <textarea id="t-rules" placeholder="Tournament Rules" rows="4"></textarea>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn" id="btn-t-publish" onclick="createOrUpdateTournament(this)" style="flex:1;">
+                                <span class="btn-text" id="t-btn-text">Publish Tournament</span>
+                                <div class="spinner"></div>
+                            </button>
+                            <button class="btn btn-warning" id="btn-t-cancel" style="display:none; flex:1;" onclick="cancelEdit()">Cancel Edit</button>
+                        </div>
+                    </div>
+                    <div class="header" style="margin-top: 40px;"><h1>Manage Active Tournaments</h1></div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead><tr><th>Title & Map</th><th>Entry / Prize</th><th>Status</th><th>Action</th></tr></thead>
+                            <tbody id="tournament-list"><tr><td colspan="4" style="text-align:center;">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- POLLS -->
+                <div id="polls" class="section">
+                    <div class="header"><h1>Create / Edit Poll</h1></div>
+                    <div class="form-card" style="background: rgba(0, 122, 255, 0.05); border: 1px solid rgba(0, 122, 255, 0.1);">
+                        <input type="hidden" id="p-edit-id">
+                        <input type="text" id="p-question" placeholder="Poll Question">
+                        <div class="form-row">
+                            <input type="text" id="p-opt1" placeholder="Option 1">
+                            <input type="text" id="p-opt2" placeholder="Option 2">
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="p-opt3" placeholder="Option 3 (Optional)">
+                            <input type="text" id="p-opt4" placeholder="Option 4 (Optional)">
+                        </div>
+                        <select id="p-status"><option value="active">Active</option><option value="closed">Closed</option></select>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="btn" id="btn-p-publish" onclick="createOrUpdatePoll(this)" style="flex:1;">
+                                <span class="btn-text" id="p-btn-text">Publish Poll</span>
+                                <div class="spinner"></div>
+                            </button>
+                            <button class="btn btn-warning" id="btn-p-cancel" style="display:none; flex:1;" onclick="cancelPollEdit()">Cancel Edit</button>
+                        </div>
+                    </div>
+                    <div class="header" style="margin-top: 40px;"><h1>Manage Active Polls</h1></div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead><tr><th>Question</th><th>Options & Votes</th><th>Status</th><th>Action</th></tr></thead>
+                            <tbody id="poll-list"><tr><td colspan="4" style="text-align:center;">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SETTINGS -->
+                <div id="settings" class="section">
+                    <div class="header"><h1>App Settings</h1></div>
+                    <div class="form-card">
+                        <label style="font-size:12px; font-weight:bold; color:var(--text-muted); margin-bottom:5px; display:block;">Wallet & Payments</label>
+                        <input type="text" id="s-qr" placeholder="Deposit QR Code Image URL">
+                        <input type="text" id="s-upi" placeholder="Admin UPI ID">
+                        <input type="text" id="s-qr-link" placeholder="QR Code Download Link">
+                        <input type="number" id="s-min-withdraw" placeholder="Minimum Withdrawal Limit">
+                        
+                        <label style="font-size:12px; font-weight:bold; color:var(--text-muted); margin-bottom:5px; margin-top:15px; display:block;">Telegram Alerts</label>
+                        <input type="text" id="s-bot-token" placeholder="Bot Token (from @BotFather)">
+                        <input type="text" id="s-payment-channel" placeholder="Payment Alert Channel ID">
+                        <input type="text" id="s-user-channel" placeholder="New User Alert Channel ID">
+                        <input type="text" id="s-tournament-channel" placeholder="Tournament Alert Channel ID">
+                        
+                        <label style="font-size:12px; font-weight:bold; color:var(--text-muted); margin-bottom:5px; margin-top:15px; display:block;">Help & Support</label>
+                        <input type="text" id="s-telegram" placeholder="Telegram Channel Link">
+                        <input type="text" id="s-help" placeholder="Online Chat Link">
+
+                        <label style="font-size:12px; font-weight:bold; color:var(--text-muted); margin-bottom:5px; margin-top:15px; display:block;">App Branding</label>
+                        <input type="text" id="s-appname" placeholder="App Name">
+                        <input type="text" id="s-applogo" placeholder="App Logo URL">
+                        
+                        <button class="btn btn-success" style="margin-top: 15px;" onclick="saveSettings(this)">
+                            <span class="btn-text">Update Settings</span>
+                            <div class="spinner"></div>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

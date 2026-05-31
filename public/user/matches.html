@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Arena - My Matches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#007aff">
+    <link rel="apple-touch-icon" href="../site/icon-192.svg">
+</head>
+<body>
+
+<div id="offline-popup"><i class="fas fa-wifi" style="text-decoration: line-through;"></i> No Internet Connection</div>
+<div id="toast">Message</div>
+
+<!-- PAGE TRANSITION LOADER -->
+<div id="page-transition" class="page-transition-overlay">
+    <div class="pt-logo">Arena</div>
+    <div class="pt-spinner"></div>
+</div>
+
+<div id="auth-page" style="display:none;"></div>
+
+<!-- MAIN APP CONTAINER -->
+<div id="app-container" style="display:none;">
+    
+    <div class="header" style="padding: 15px 20px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div id="app-logo-header" style="width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--primary), #34aeff); display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:16px; box-shadow:0 2px 8px rgba(0,122,255,0.3);">
+                <img id="header-app-logo-img" src="" alt="" style="width:100%; height:100%; border-radius:10px; object-fit:cover; display:none;">
+                <span id="header-app-logo-text">A</span>
+            </div>
+            <div>
+                <div id="header-app-name" style="font-size:17px; font-weight:800; color:var(--text-main); letter-spacing:-0.3px; line-height:1.1;">Arena Tournament</div>
+                <div style="font-size:10px; color:var(--text-muted); font-weight:600;">My Matches</div>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div class="wallet-badge" onclick="navigateTo('wallet.html')" style="margin-right:0;"><i class="fas fa-wallet"></i> ₹<span id="header-bal">0</span></div>
+            <div id="user-avatar-header" onclick="navigateTo('profile.html')" style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--primary), #34aeff); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1);"></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="matches">
+            <div class="ios-segment">
+                <div class="segment-btn active" onclick="switchMatchTab('upcoming')">Joined Tournaments</div>
+                <div class="segment-btn" onclick="switchMatchTab('completed')">Completed</div>
+            </div>
+            <div id="list-upcoming" class="match-list active"></div>
+            <div id="list-completed" class="match-list">
+                <div style="text-align:center; padding: 20px; color:var(--text-muted);">No completed matches</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('home.html')"><i class="fas fa-home"></i>Home</a>
+        <a class="nav-item active" href="matches.html"><i class="fas fa-gamepad"></i>Matches</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('rank.html')"><i class="fas fa-trophy"></i>Rank</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('wallet.html')"><i class="fas fa-wallet"></i>Wallet</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('profile.html')"><i class="fas fa-user"></i>Profile</a>
+    </div>
+
+    <!-- TOURNAMENT DETAIL FULL PAGE -->
+    <div id="tournament-detail-page" class="full-page-view">
+        <div class="fp-header">
+            <i class="fas fa-arrow-left" onclick="closeTournamentDetail()"></i>
+            <h2 style="font-size: 18px; font-weight: 800;">Tournament Info</h2>
+        </div>
+        <div class="fp-content">
+            <img id="td-full-img" src="" class="fp-cover" alt="Cover">
+            <div class="fp-body">
+                <h2 id="td-full-title" class="fp-title">Title</h2>
+                <div id="td-live-timer-pill" class="match-time-pill timer-high">
+                    <i class="far fa-clock"></i> 
+                    <span id="td-live-timer-text" class="dynamic-timer" data-time="">--h --m --s</span>
+                </div>
+                <div class="fp-details-grid">
+                    <div class="fp-d-box"><span>Entry</span><strong id="td-full-entry">₹0</strong></div>
+                    <div class="fp-d-box"><span>Prize</span><strong id="td-full-prize" style="color: var(--success);">₹0</strong></div>
+                    <div class="fp-d-box"><span>Per Kill</span><strong id="td-full-kill" style="color: var(--primary);">₹0</strong></div>
+                </div>
+                <div id="td-full-joined-ui" style="margin-bottom: 20px;"></div>
+                <div id="td-room-details"></div>
+                <div class="fp-box" style="margin-bottom: 30px; display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <h3 style="font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 2px;">Map</h3>
+                        <strong id="td-full-map" style="font-size:18px; color:var(--text-main); font-weight:800;">Bermuda</strong>
+                    </div>
+                    <i class="fas fa-map-marked-alt" style="font-size:32px; color:var(--primary); opacity:0.8;"></i>
+                </div>
+                <div class="fp-box" style="margin-bottom: 30px; display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <h3 style="font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 2px;">Mode</h3>
+                        <strong id="td-full-type" style="font-size:18px; color:var(--text-main); font-weight:800;">Solo</strong>
+                    </div>
+                    <i class="fas fa-users" style="font-size:32px; color:var(--warning); opacity:0.8;"></i>
+                </div>
+                <div class="fp-box" style="margin-bottom: 30px;">
+                    <h3 style="font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 10px;">Rules & Guidelines</h3>
+                    <p id="td-full-rules" style="font-size: 13px; color: var(--text-main); line-height: 1.6; font-weight: 500; white-space: pre-wrap;"></p>
+                </div>
+            </div>
+        </div>
+        <div class="fp-bottom-bar">
+            <button id="main-join-btn" class="btn" onclick="initiateJoin(this)">
+                <span class="btn-text">Join Tournament</span>
+                <div class="spinner"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="joined-players-modal" class="modal-overlay" onclick="closeModal(event, 'joined-players-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="margin-bottom: 15px; font-weight: 800;">Players Joined</h2>
+            <div id="players-list-container" style="text-align:left;"></div>
+            <button class="btn btn-outline" style="margin-top:20px; width:100%;" onclick="forceCloseModal('joined-players-modal')">Close</button>
+        </div>
+    </div>
+
+    <div id="join-form-modal" class="modal-overlay" onclick="closeModal(event, 'join-form-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="margin-bottom: 5px; font-weight: 800;">Join Tournament</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-weight: 500;">Enter your Free Fire details carefully.</p>
+            <input type="number" id="ff-uid" placeholder="FreeFire UID (Numbers Only)">
+            <input type="text" id="ff-name" placeholder="FreeFire In-Game Name">
+            <button class="btn" onclick="confirmJoin(this)">
+                <span class="btn-text">Pay & Join (₹<span id="jf-entry-fee">0</span>)</span>
+                <div class="spinner"></div>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script src="common.js"></script>
+<script src="matches.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered')).catch(err => console.log('SW failed'));
+}
+</script>
+</body>
+</html>

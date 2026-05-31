@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Arena - Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#007aff">
+    <link rel="apple-touch-icon" href="../site/icon-192.svg">
+    <style>
+        .setting-group { background: var(--card-bg); border-radius: 16px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .setting-item { padding: 16px 20px; border-bottom: 1px solid #f2f2f7; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-item:active { background: #f2f2f7; }
+        .setting-item .si-left { display: flex; align-items: center; gap: 12px; }
+        .setting-item .si-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .setting-item .si-text { font-size: 15px; font-weight: 600; color: var(--text-main); }
+        .setting-item .si-sub { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+        .setting-item .si-right { color: var(--text-muted); font-size: 14px; }
+
+        /* Toggle Switch */
+        .toggle { position: relative; width: 50px; height: 28px; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 28px; transition: 0.3s; }
+        .toggle-slider:before { content: ""; position: absolute; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+        .toggle input:checked + .toggle-slider { background: var(--primary); }
+        .toggle input:checked + .toggle-slider:before { transform: translateX(22px); }
+
+        .settings-section-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 5px; margin-bottom: 8px; margin-top: 10px; }
+
+        /* Theme Preview */
+        .theme-preview { display: flex; gap: 10px; margin-top: 5px; }
+        .theme-option { flex: 1; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.3s; font-size: 12px; font-weight: 700; }
+        .theme-option.active { border-color: var(--primary); }
+        .theme-light { background: #f2f2f7; color: #1c1c1e; }
+        .theme-dark { background: #1e1e1e; color: #ffffff; }
+    </style>
+</head>
+<body>
+
+<div id="toast">Message</div>
+
+<div id="auth-page" style="display:none;"></div>
+
+<div id="app-container" style="display:none;">
+    
+    <div class="header" style="padding: 15px 20px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div id="app-logo-header" style="width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--primary), #34aeff); display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:16px; box-shadow:0 2px 8px rgba(0,122,255,0.3);">
+                <img id="header-app-logo-img" src="" alt="" style="width:100%; height:100%; border-radius:10px; object-fit:cover; display:none;">
+                <span id="header-app-logo-text">A</span>
+            </div>
+            <div>
+                <div id="header-app-name" style="font-size:17px; font-weight:800; color:var(--text-main); letter-spacing:-0.3px; line-height:1.1;">Arena Tournament</div>
+                <div style="font-size:10px; color:var(--text-muted); font-weight:600;">Settings</div>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div class="wallet-badge" onclick="navigateTo('wallet.html')" style="margin-right:0;"><i class="fas fa-wallet"></i> ₹<span id="header-bal">0</span></div>
+            <div id="user-avatar-header" onclick="navigateTo('profile.html')" style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--primary), #34aeff); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1);">U</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="settings-section-title">Appearance</div>
+        <div class="setting-group">
+            <div class="setting-item">
+                <div class="si-left">
+                    <div class="si-icon" style="background:rgba(0,122,255,0.1); color:var(--primary);"><i class="fas fa-moon"></i></div>
+                    <div>
+                        <div class="si-text">Dark Mode</div>
+                        <div class="si-sub">Switch to dark theme</div>
+                    </div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="settings-section-title">Account</div>
+        <div class="setting-group">
+            <div class="setting-item" onclick="navigateTo('profile.html')">
+                <div class="si-left">
+                    <div class="si-icon" style="background:rgba(52,199,89,0.1); color:var(--success);"><i class="fas fa-user"></i></div>
+                    <div>
+                        <div class="si-text">Edit Profile</div>
+                        <div class="si-sub">Name, FF Name, FF UID</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right si-right"></i>
+            </div>
+            <div class="setting-item" onclick="navigateTo('wallet.html')">
+                <div class="si-left">
+                    <div class="si-icon" style="background:rgba(255,149,0,0.1); color:var(--warning);"><i class="fas fa-wallet"></i></div>
+                    <div>
+                        <div class="si-text">My Wallet</div>
+                        <div class="si-sub">Deposit, Withdraw, History</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right si-right"></i>
+            </div>
+        </div>
+
+        <div class="settings-section-title">Support</div>
+        <div class="setting-group">
+            <div class="setting-item" onclick="openAdminLink('telegram')">
+                <div class="si-left">
+                    <div class="si-icon" style="background:rgba(0,136,204,0.1); color:#0088cc;"><i class="fab fa-telegram"></i></div>
+                    <div>
+                        <div class="si-text">Join Telegram</div>
+                        <div class="si-sub">Get updates and news</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right si-right"></i>
+            </div>
+            <div class="setting-item" onclick="openAdminLink('help')">
+                <div class="si-left">
+                    <div class="si-icon" style="background:rgba(255,149,0,0.1); color:var(--warning);"><i class="fas fa-headset"></i></div>
+                    <div>
+                        <div class="si-text">Help & Support</div>
+                        <div class="si-sub">Chat with support team</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right si-right"></i>
+            </div>
+        </div>
+
+        <div class="settings-section-title">About</div>
+        <div class="setting-group">
+            <div class="setting-item">
+                <div class="si-left">
+                    <div class="si-icon" style="background:rgba(0,122,255,0.1); color:var(--primary);"><i class="fas fa-info-circle"></i></div>
+                    <div>
+                        <div class="si-text">App Version</div>
+                        <div class="si-sub">Arena Tournament v1.0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-item" onclick="clearCache()">
+                <div class="si-left">
+                    <div class="si-icon" style="background:rgba(255,59,48,0.1); color:var(--danger);"><i class="fas fa-broom"></i></div>
+                    <div>
+                        <div class="si-text">Clear Cache</div>
+                        <div class="si-sub">Clear app data and reload</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right si-right"></i>
+            </div>
+            <div class="setting-item" style="color:var(--danger);" onclick="confirmLogout()">
+                <div class="si-left">
+                    <div class="si-icon" style="background:rgba(255,59,48,0.1); color:var(--danger);"><i class="fas fa-sign-out-alt"></i></div>
+                    <div>
+                        <div class="si-text" style="color:var(--danger);">Logout</div>
+                        <div class="si-sub">Sign out from your account</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('home.html')"><i class="fas fa-home"></i>Home</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('matches.html')"><i class="fas fa-gamepad"></i>Matches</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('rank.html')"><i class="fas fa-trophy"></i>Rank</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('wallet.html')"><i class="fas fa-wallet"></i>Wallet</a>
+        <a class="nav-item" href="javascript:void(0)" onclick="navigateTo('profile.html')"><i class="fas fa-user"></i>Profile</a>
+    </div>
+
+</div>
+
+<script src="common.js"></script>
+<script src="settings.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered')).catch(err => console.log('SW failed'));
+}
+</script>
+</body>
+</html>
