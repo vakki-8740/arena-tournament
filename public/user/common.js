@@ -1,4 +1,4 @@
-const API_BASE = 'https://arena-tournament-s7ne.onrender.com';
+const API_BASE = 'https://arena-tournament-1.onrender.com';
 
 // Session check
 window.userToken = localStorage.getItem("arena_token");
